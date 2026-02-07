@@ -11,10 +11,19 @@ import * as Joi from 'joi';
       isGlobal: true,
       envFilePath: '.env',
       validationSchema: Joi.object({
-        BAYUTI_BASE_URL: Joi.string().uri().required(),
+        // Must be a full http(s) URL to the Bayuti backend root
+        BAYUTI_BASE_URL: Joi.string().uri({ scheme: ['http', 'https'] }).required().messages({
+          'string.uri': 'BAYUTI_BASE_URL must be a full http(s) URL',
+        }),
         BAYUTI_API_KEY: Joi.string().required(),
         BAYUTI_MASTER_KEY: Joi.string().required(),
-        BAYUTI_HEALTH_URL: Joi.string().uri().required(),
+        // Must be a full http(s) URL to the Bayuti API health endpoint (query params allowed)
+        BAYUTI_HEALTH_URL: Joi.string()
+          .pattern(/^https?:\/\/.+/i)
+          .required()
+          .messages({
+            'string.pattern.base': 'BAYUTI_HEALTH_URL must be a full http(s) URL; query params allowed',
+          }),
         MONITOR_ENV: Joi.string().default('production'),
         MONITOR_INTERVAL_MS: Joi.number().default(60000),
         MONITOR_TIMEOUT_MS: Joi.number().default(5000),

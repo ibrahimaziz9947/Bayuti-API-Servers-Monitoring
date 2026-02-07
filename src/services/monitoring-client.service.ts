@@ -40,6 +40,7 @@ export class MonitoringClientService implements OnApplicationBootstrap {
       baseURL: this.baseUrl,
       timeout: this.timeoutMs,
     });
+    this.log.log(`Resolved BAYUTI_HEALTH_URL=${this.healthUrl}`);
     this.start();
   }
 
