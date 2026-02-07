@@ -1,0 +1,27 @@
+{
+  "name": "bayuti_api_servers_monitoring",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node src/main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/common": "^11.1.13",
+    "@nestjs/config": "^4.0.3",
+    "@nestjs/core": "^11.1.13",
+    "@nestjs/platform-express": "^11.1.13",
+    "@nestjs/serve-static": "^5.0.4",
+    "axios": "^1.13.4",
+    "express": "^5.2.1",
+    "joi": "^18.0.2",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

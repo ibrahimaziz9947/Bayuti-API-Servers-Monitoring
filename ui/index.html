@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>System Monitoring Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="title">
+        <h1>System Monitoring Dashboard</h1>
+        <p class="subtitle">Hourly checks, status, and logs</p>
+      </div>
+      <div class="controls">
+        <input id="searchInput" type="text" placeholder="Search services..." />
+        <select id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="up">Up</option>
+          <option value="degraded">Degraded</option>
+          <option value="down">Down</option>
+        </select>
+        <select id="categoryFilter">
+          <option value="">All Categories</option>
+          <option value="internal">Internal</option>
+          <option value="external">External</option>
+        </select>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="status-section">
+        <h2>Services Status</h2>
+        <div id="servicesList" class="cards"></div>
+      </section>
+
+      <section class="logs-section">
+        <h2>Recent Logs</h2>
+        <div class="log-controls">
+          <select id="logLevelFilter">
+            <option value="">All Levels</option>
+            <option value="info">Info</option>
+            <option value="warn">Warn</option>
+            <option value="error">Error</option>
+          </select>
+          <select id="logServiceFilter">
+            <option value="">All Services</option>
+          </select>
+        </div>
+        <div id="logsList" class="logs"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div id="nextCheck">Next check in: —</div>
+      <div>Demo UI with mock data</div>
+    </footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
