@@ -21,33 +21,42 @@ html, body {
 
 .app-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: stretch;
+  justify-content: flex-start;
   gap: 16px;
-  padding: 20px;
+  padding: 16px;
   border-bottom: 1px solid var(--border);
   background: var(--panel);
   position: sticky;
   top: 0;
   z-index: 10;
 }
-.title h1 { margin: 0 0 4px; font-size: 22px; }
+.title h1 { margin: 0 0 4px; font-size: 20px; }
 .subtitle { color: var(--muted); margin: 0; font-size: 13px; }
-.controls { display: flex; gap: 10px; }
+.filters-toggle {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+.controls { display: none; flex-wrap: wrap; gap: 10px; width: 100%; }
+.controls.show { display: flex; }
 .controls input, .controls select, .log-controls select {
   background: var(--card);
   color: var(--text);
   border: 1px solid var(--border);
-  padding: 8px 10px;
+  padding: 12px 12px;
   border-radius: 8px;
   outline: none;
+  width: 100%;
 }
 
 .content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 20px;
-  gap: 20px;
+  grid-template-columns: 1fr;
+  padding: 16px;
+  gap: 16px;
 }
 
 .status-section, .logs-section {
@@ -63,7 +72,7 @@ html, body {
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 .card {
@@ -105,7 +114,8 @@ html, body {
 .level-error { color: var(--down); }
 .log-meta { color: var(--muted); font-size: 12px; }
 .log-message { grid-column: 1 / -1; font-size: 13px; }
-.log-controls { display: flex; gap: 10px; margin-bottom: 10px; }
+.log-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+.log-controls select { width: 100%; }
 
 .app-footer {
   display: flex;
@@ -118,6 +128,17 @@ html, body {
   font-size: 12px;
 }
 
-@media (max-width: 900px) {
-  .content { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .app-header { align-items: center; justify-content: space-between; }
+  .filters-toggle { display: none; }
+  .controls { display: flex; width: auto; }
+  .controls input, .controls select { width: auto; }
+  .content { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
+  .cards { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .log-controls select { width: auto; }
+}
+
+@media (min-width: 1024px) {
+  .content { grid-template-columns: 1fr 1fr; }
+  .title h1 { font-size: 22px; }
 }

@@ -10,6 +10,8 @@ const el = {
   logLevelFilter: document.getElementById('logLevelFilter'),
   logServiceFilter: document.getElementById('logServiceFilter'),
   nextCheck: document.getElementById('nextCheck'),
+  filtersToggle: document.getElementById('filtersToggle'),
+  headerControls: document.getElementById('headerControls'),
 };
 
 function renderServices() {
@@ -139,3 +141,9 @@ function subscribeEvents() {
 loadInitial();
 subscribeEvents();
 startCountdown();
+if (el.filtersToggle && el.headerControls) {
+  el.filtersToggle.addEventListener('click', () => {
+    const isShown = el.headerControls.classList.toggle('show');
+    el.filtersToggle.setAttribute('aria-expanded', String(isShown));
+  });
+}

@@ -12,7 +12,8 @@
         <h1>System Monitoring Dashboard</h1>
         <p class="subtitle">Hourly checks, status, and logs</p>
       </div>
-      <div class="controls">
+      <button id="filtersToggle" class="filters-toggle" aria-expanded="false" aria-controls="headerControls">Filters</button>
+      <div id="headerControls" class="controls">
         <input id="searchInput" type="text" placeholder="Search services..." />
         <select id="statusFilter">
           <option value="">All Statuses</option>
