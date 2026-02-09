@@ -116,19 +116,12 @@ el.logServiceFilter.addEventListener('change', renderLogs);
 
 async function loadInitial() {
   const re = await fetch('/api/recheck').then(r => r.json()).catch(() => null);
-  if (re && re.recheck) {
-    const r = re.recheck;
-    services = [{
-      name: 'Bayuti API',
-      category: 'internal',
-      status: r.status,
-      lastChecked: Date.now(),
-      location: '',
-    }];
-  } else {
-    const s = await fetch('/api/services').then(r => r.json());
-    services = s.services || [];
-  }
+  services = (re && re.services) ? re.services.map(s => ({
+    name: s.name,
+    category: s.category || 'internal',
+    status: s.status,
+    lastChecked: Date.now(),
+  })) : [];
   const l = await fetch('/api/logs').then(r => r.json());
   logs = l.logs || [];
   populateLogServiceFilter();
@@ -159,15 +152,13 @@ if (recheckBtn) {
     recheckBtn.disabled = true;
     try {
       const re = await fetch('/api/recheck').then(r => r.json());
-      if (re && re.recheck) {
-        const r = re.recheck;
-        services = [{
-          name: 'Bayuti API',
-          category: 'internal',
-          status: r.status,
+      if (re && re.services) {
+        services = re.services.map(s => ({
+          name: s.name,
+          category: s.category || 'internal',
+          status: s.status,
           lastChecked: Date.now(),
-          location: '',
-        }];
+        }));
         renderServices();
         const l = await fetch('/api/logs').then(r => r.json());
         logs = l.logs || [];

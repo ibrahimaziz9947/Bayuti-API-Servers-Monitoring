@@ -34,7 +34,7 @@ export class MonitoringController {
 
   @Get('recheck')
   async recheck() {
-    const result = await this.client.runOnce();
-    return { recheck: result };
+    const results = await this.client.runAll();
+    return { services: results, source: 'live' };
   }
 }
