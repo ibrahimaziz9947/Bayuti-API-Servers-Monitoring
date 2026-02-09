@@ -104,16 +104,25 @@ html, body {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px;
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  flex-direction: column;
   gap: 6px;
 }
-.log-top { display: flex; align-items: center; gap: 8px; }
-.level-info { color: var(--up); }
-.level-warn { color: var(--degraded); }
-.level-error { color: var(--down); }
-.log-meta { color: var(--muted); font-size: 12px; }
-.log-message { grid-column: 1 / -1; font-size: 13px; }
+.log-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.log-badges { display: flex; align-items: center; gap: 8px; }
+.badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.badge-info { background: color-mix(in srgb, var(--up) 15%, transparent); color: var(--up); border: 1px solid color-mix(in srgb, var(--up) 30%, transparent); }
+.badge-warn { background: color-mix(in srgb, var(--degraded) 15%, transparent); color: var(--degraded); border: 1px solid color-mix(in srgb, var(--degraded) 30%, transparent); }
+.badge-error { background: color-mix(in srgb, var(--down) 15%, transparent); color: var(--down); border: 1px solid color-mix(in srgb, var(--down) 30%, transparent); }
+.log-service { font-weight: 600; font-size: 13px; }
+.log-meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.log-message { font-size: 13px; line-height: 1.4; color: var(--text); }
 .log-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
 .log-controls select { width: 100%; }
 

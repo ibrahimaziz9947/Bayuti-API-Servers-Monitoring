@@ -60,17 +60,18 @@ function renderLogs() {
 }
 
 function logItem(l) {
-  const levelCls = l.level === 'info' ? 'level-info'
-                 : l.level === 'warn' ? 'level-warn'
-                 : 'level-error';
+  const levelCls = l.level === 'info' ? 'badge-info'
+                 : l.level === 'warn' ? 'badge-warn'
+                 : 'badge-error';
   return `
     <div class="log-item">
       <div class="log-top">
-        <div class="${levelCls}">${capitalize(l.level)}</div>
-        <div>•</div>
-        <div>${l.service}</div>
+        <div class="log-badges">
+          <span class="badge ${levelCls}">${l.level}</span>
+          <span class="log-service">${l.service}</span>
+        </div>
+        <div class="log-meta">${new Date(l.timestamp).toLocaleString()}</div>
       </div>
-      <div class="log-meta">${new Date(l.timestamp).toLocaleString()}</div>
       <div class="log-message">${l.message}</div>
     </div>
   `;
@@ -121,6 +122,8 @@ async function loadInitial() {
     category: s.category || 'internal',
     status: s.status,
     lastChecked: Date.now(),
+    location: s.category === 'internal' ? (s.location || 'eu-west-1') : undefined,
+    vendor: s.category === 'external' ? (s.vendor || s.name) : undefined
   })) : [];
   const l = await fetch('/api/logs').then(r => r.json());
   logs = l.logs || [];
@@ -158,6 +161,8 @@ if (recheckBtn) {
           category: s.category || 'internal',
           status: s.status,
           lastChecked: Date.now(),
+          location: s.category === 'internal' ? (s.location || 'eu-west-1') : undefined,
+          vendor: s.category === 'external' ? (s.vendor || s.name) : undefined
         }));
         renderServices();
         const l = await fetch('/api/logs').then(r => r.json());
