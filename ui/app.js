@@ -115,9 +115,21 @@ el.logLevelFilter.addEventListener('change', renderLogs);
 el.logServiceFilter.addEventListener('change', renderLogs);
 
 async function loadInitial() {
-  const s = await fetch('/api/services').then(r => r.json());
+  const re = await fetch('/api/recheck').then(r => r.json()).catch(() => null);
+  if (re && re.recheck) {
+    const r = re.recheck;
+    services = [{
+      name: 'Bayuti API',
+      category: 'internal',
+      status: r.status,
+      lastChecked: Date.now(),
+      location: '',
+    }];
+  } else {
+    const s = await fetch('/api/services').then(r => r.json());
+    services = s.services || [];
+  }
   const l = await fetch('/api/logs').then(r => r.json());
-  services = s.services || [];
   logs = l.logs || [];
   populateLogServiceFilter();
   renderServices();
@@ -139,8 +151,34 @@ function subscribeEvents() {
   };
 }
 loadInitial();
-subscribeEvents();
+// subscribeEvents(); // disabled: rely on on-demand checks suitable for serverless
 startCountdown();
+const recheckBtn = document.getElementById('recheckBtn');
+if (recheckBtn) {
+  recheckBtn.addEventListener('click', async () => {
+    recheckBtn.disabled = true;
+    try {
+      const re = await fetch('/api/recheck').then(r => r.json());
+      if (re && re.recheck) {
+        const r = re.recheck;
+        services = [{
+          name: 'Bayuti API',
+          category: 'internal',
+          status: r.status,
+          lastChecked: Date.now(),
+          location: '',
+        }];
+        renderServices();
+        const l = await fetch('/api/logs').then(r => r.json());
+        logs = l.logs || [];
+        populateLogServiceFilter();
+        renderLogs();
+      }
+    } finally {
+      recheckBtn.disabled = false;
+    }
+  });
+}
 if (el.filtersToggle && el.headerControls) {
   el.filtersToggle.addEventListener('click', () => {
     const isShown = el.headerControls.classList.toggle('show');

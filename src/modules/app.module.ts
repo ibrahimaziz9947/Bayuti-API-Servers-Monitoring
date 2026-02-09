@@ -29,6 +29,7 @@ import * as Joi from 'joi';
         MONITOR_TIMEOUT_MS: Joi.number().default(5000),
         MONITOR_DEGRADED_THRESHOLD_MS: Joi.number().default(1000),
         PORT: Joi.number().default(3000),
+        BAYUTI_HEALTH_TOKEN: Joi.string().optional(),
       }),
     }),
     ServeStaticModule.forRoot({

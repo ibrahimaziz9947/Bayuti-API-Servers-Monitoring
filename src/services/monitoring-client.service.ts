@@ -46,9 +46,7 @@ export class MonitoringClientService implements OnApplicationBootstrap {
 
   private async start() {
     await this.authorize();
-    await this.runOnce();
-    this.timer = setInterval(() => this.runOnce(), this.intervalMs);
-    this.log.log(`Monitoring started: interval=${this.intervalMs}ms, healthUrl=${this.healthUrl}`);
+    this.log.log(`[LIVE] Monitoring ready (on-demand). healthUrl=${this.healthUrl}`);
   }
 
   private async authorize() {
@@ -66,13 +64,15 @@ export class MonitoringClientService implements OnApplicationBootstrap {
     }
   }
 
-  private async runOnce() {
+  async runOnce() {
     const start = Date.now();
     let status: ServiceStatus = 'down';
     let responseTime = 0;
     let error: string | undefined;
     try {
-      const res = await axios.get(this.healthUrl!, { timeout: this.timeoutMs, validateStatus: () => true });
+      const urlToCheck = this.buildHealthUrlWithToken();
+      this.log.log(`[LIVE] Checking URL: ${urlToCheck}`);
+      const res = await axios.get(urlToCheck, { timeout: this.timeoutMs, validateStatus: () => true });
       responseTime = Date.now() - start;
       if (res.status === 200) {
         status = responseTime > this.degradedThresholdMs ? 'degraded' : 'up';
@@ -88,14 +88,14 @@ export class MonitoringClientService implements OnApplicationBootstrap {
 
     try {
       await this.postStatus(status, responseTime, error);
-      this.log.log(`Reported status: ${status} rt=${responseTime}ms${error ? ' err='+error : ''}`);
+      this.log.log(`[LIVE] Reported status: ${status} rt=${responseTime}ms${error ? ' err='+error : ''}`);
     } catch (err: any) {
       if (err?.response?.status === 401) {
         this.log.warn('Token expired; re-authorizing');
         try {
           await this.authorize();
           await this.postStatus(status, responseTime, error);
-          this.log.log('Re-authorized and reported status');
+          this.log.log('[LIVE] Re-authorized and reported status');
         } catch (inner: any) {
           this.log.error(`Report failed after re-auth: ${inner?.message || inner}`);
         }
@@ -103,6 +103,7 @@ export class MonitoringClientService implements OnApplicationBootstrap {
         this.log.error(`Report failed: ${err?.message || err}`);
       }
     }
+    return { status, responseTime, error, url: this.buildHealthUrlWithToken(), live: true };
   }
 
   private async postStatus(status: ServiceStatus, responseTime: number, error?: string) {
@@ -121,5 +122,16 @@ export class MonitoringClientService implements OnApplicationBootstrap {
     await this.http!.post('/bayuti/status', body, {
       headers: { Authorization: `Bearer ${this.accessToken}` },
     });
+  }
+
+  private buildHealthUrlWithToken(): string {
+    // If the URL already contains a token param, use it
+    if (this.healthUrl.includes('token=')) return this.healthUrl;
+    const token = this.cfg.get<string>('BAYUTI_HEALTH_TOKEN');
+    if (!token) {
+      throw new Error('BAYUTI_HEALTH_URL requires token. Provide BAYUTI_HEALTH_TOKEN or include token= in URL');
+    }
+    const sep = this.healthUrl.includes('?') ? '&' : '?';
+    return `${this.healthUrl}${sep}token=${encodeURIComponent(token)}`;
   }
 }
