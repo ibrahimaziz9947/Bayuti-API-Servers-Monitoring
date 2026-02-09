@@ -148,7 +148,11 @@ export class MonitoringClientService implements OnApplicationBootstrap {
     const logs = results.map(r => ({
       level: r.status === 'down' ? 'error' : (r.status === 'degraded' ? 'warn' : 'info'),
       service: r.name,
-      message: r.error || (r.status === 'up' ? 'All systems operational' : `Service ${r.status}`),
+      message: r.error || (
+        r.status === 'up' ? 'All systems operational' : 
+        r.status === 'degraded' ? 'Provider reports partial outage / degraded performance' :
+        'Service unavailable or major outage'
+      ),
       status: r.status,
       timestamp: new Date().toISOString(),
     }));
