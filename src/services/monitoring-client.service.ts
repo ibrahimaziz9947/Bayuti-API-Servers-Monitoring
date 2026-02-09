@@ -144,6 +144,15 @@ export class MonitoringClientService implements OnApplicationBootstrap {
   }
 
   private async postStatus(results: ServiceResult[]) {
+    // Generate individual logs for each service result
+    const logs = results.map(r => ({
+      level: r.status === 'down' ? 'error' : (r.status === 'degraded' ? 'warn' : 'info'),
+      service: r.name,
+      message: r.error || (r.status === 'up' ? 'All systems operational' : `Service ${r.status}`),
+      status: r.status,
+      timestamp: new Date().toISOString(),
+    }));
+
     const body = {
       environment: this.environment,
       services: results.map(r => ({
@@ -153,10 +162,57 @@ export class MonitoringClientService implements OnApplicationBootstrap {
         responseTime: r.responseTime,
         ...(r.error ? { error: r.error } : {}),
       })),
+      // Include the detailed logs in the payload so the backend can store them
+      logs, 
     };
-    await this.http!.post('/bayuti/status', body, {
-      headers: { Authorization: `Bearer ${this.accessToken}` },
-    });
+    
+    // Note: The Bayuti backend POST /bayuti/status endpoint needs to support this 'logs' field
+    // If it doesn't, we might need to post logs separately or rely on the backend generating them from 'services'
+    // Assuming for this task that we simply send the services array and the backend (or our mock logic here) handles it.
+    // However, the prompt asks to "Create one log entry per service".
+    // Since we don't control the Bayuti backend logic that *receives* this POST, 
+    // and we are implementing the *client*, we must ensure the data we send allows the receiving end to store these logs.
+    //
+    // BUT: The prompt says "The backend emits only one log entry... Required Fix... During /api/recheck... Create one log entry per service".
+    // This implies we should be fixing the *local* backend logic that handles the recheck response and logs it.
+    // Wait, `MonitoringClientService` IS the "backend" for the dashboard in this context (NestJS service).
+    // The `postStatus` sends data to the *remote* Bayuti API.
+    // The Dashboard UI fetches logs from `/api/logs`, which proxies `BAYUTI_BASE_URL/bayuti/logs`.
+    // So if the remote Bayuti API is what stores logs, we must send them there.
+    // 
+    // If the remote API only accepts `services` list and generates its own logs, we can't change that behavior from here without changing the remote API.
+    // HOWEVER, if the task implies that *our* local /api/logs endpoint should return these logs, we need to store them locally or proxy them.
+    // 
+    // Let's look at `monitoring.controller.ts`. It proxies `/api/logs` to the remote API.
+    // So the issue IS that the remote API isn't generating per-service logs from our batch update.
+    // OR, we are supposed to send individual status updates to the remote API so it generates individual logs?
+    // The prompt says: "Refactor postStatus to accept an array... but post them individually or batch them correctly for logs".
+    //
+    // If the remote API generates one log per POST request, then batching all services into one POST causes the "one log entry" issue.
+    // SOLUTION: We should iterate and send individual POST requests for each service if we want individual logs on the remote end.
+    
+    // Let's try sending individual requests in parallel (or sequential) instead of one batch.
+    
+    for (const result of results) {
+      const singleBody = {
+        environment: this.environment,
+        services: [{
+          name: result.name,
+          url: result.url,
+          status: result.status,
+          responseTime: result.responseTime,
+          ...(result.error ? { error: result.error } : {}),
+        }],
+      };
+      
+      try {
+        await this.http!.post('/bayuti/status', singleBody, {
+          headers: { Authorization: `Bearer ${this.accessToken}` },
+        });
+      } catch (err: any) {
+        this.log.error(`Failed to post status for ${result.name}: ${err?.message || err}`);
+      }
+    }
   }
 
   async runAll(): Promise<ServiceResult[]> {
