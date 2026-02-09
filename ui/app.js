@@ -51,6 +51,12 @@ function renderLogs() {
   const level = el.logLevelFilter.value;
   const service = el.logServiceFilter.value;
   const filtered = logs.filter(l => {
+    // Normalization
+    if (!l.level) l.level = (l.status === 'down' || l.status === 'error') ? 'error' : (l.status === 'degraded' ? 'warn' : 'info');
+    if (!l.service) l.service = (l.services && l.services[0] && l.services[0].name) ? l.services[0].name : 'System';
+    if (!l.message) l.message = (l.level === 'error') ? 'Health check failed or timeout' : (l.level === 'warn' ? 'Service responding slowly or partially degraded' : 'Health check OK');
+    if (!l.timestamp) l.timestamp = Date.now();
+
     const matchLevel = !level || l.level === level;
     const matchService = !service || l.service === service;
     return matchLevel && matchService;
