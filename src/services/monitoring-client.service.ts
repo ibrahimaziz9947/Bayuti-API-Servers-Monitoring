@@ -143,6 +143,22 @@ export class MonitoringClientService implements OnApplicationBootstrap {
     return { name: target.name, category: target.category, status, responseTime, error, url: this.buildUrlWithToken(target), live: true } as ServiceResult;
   }
 
+  private async postStatus(results: ServiceResult[]) {
+    const body = {
+      environment: this.environment,
+      services: results.map(r => ({
+        name: r.name,
+        url: r.url,
+        status: r.status,
+        responseTime: r.responseTime,
+        ...(r.error ? { error: r.error } : {}),
+      })),
+    };
+    await this.http!.post('/bayuti/status', body, {
+      headers: { Authorization: `Bearer ${this.accessToken}` },
+    });
+  }
+
   async runAll(): Promise<ServiceResult[]> {
     const results: ServiceResult[] = [];
     
