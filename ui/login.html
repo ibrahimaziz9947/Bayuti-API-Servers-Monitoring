@@ -5,70 +5,213 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Bayuti Monitoring</title>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-      background-color: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg-gradient: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --error-bg: #fef2f2;
+      --error-border: #fca5a5;
+      --error-text: #b91c1c;
+      --focus-ring: rgba(37, 99, 235, 0.2);
     }
+
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg-gradient);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
     .login-card {
       background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      padding: 40px;
       width: 100%;
-      max-width: 400px;
+      box-sizing: border-box;
     }
-    h1 { margin-top: 0; text-align: center; color: #333; }
-    .form-group { margin-bottom: 1rem; }
-    label { display: block; margin-bottom: 0.5rem; color: #555; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 8px 0;
+    }
+
+    .title {
+      color: var(--text-main);
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .icon-shield {
+      width: 24px;
+      height: 24px;
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
     input {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      box-sizing: border-box; /* Fix padding issue */
+      height: 48px;
+      padding: 0 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      color: var(--text-main);
+      background: #fff;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
     }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--focus-ring);
+    }
+
     button {
       width: 100%;
-      padding: 0.75rem;
-      background: #0070f3;
+      height: 48px;
+      background: var(--primary);
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      font-size: 1rem;
-      margin-top: 1rem;
+      transition: background-color 0.2s ease;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    button:hover { background: #005bb5; }
-    .error { color: red; text-align: center; margin-top: 1rem; display: none; }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    button:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      display: none;
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 24px;
+    }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <h1>Login</h1>
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" required>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="header">
+        <p class="subtitle">Bayuti System Monitoring</p>
+        <h1 class="title">
+          <svg class="icon-shield" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Admin Login
+        </h1>
       </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" required>
-      </div>
-      <button type="submit">Login</button>
-      <div id="error" class="error"></div>
-    </form>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="admin@bayuti.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="submitBtn">
+          <div class="spinner" id="spinner"></div>
+          <span id="btnText">Sign In</span>
+        </button>
+
+        <div id="error" class="error-message"></div>
+      </form>
+    </div>
   </div>
+
   <script>
     const form = document.getElementById('loginForm');
     const errorDiv = document.getElementById('error');
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      // Reset state
+      errorDiv.style.display = 'none';
+      submitBtn.disabled = true;
+      spinner.style.display = 'block';
+      btnText.textContent = 'Authenticating...';
+
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       
@@ -84,12 +227,16 @@
           localStorage.setItem('token', data.access_token);
           window.location.href = '/';
         } else {
-          errorDiv.textContent = 'Invalid credentials';
-          errorDiv.style.display = 'block';
+          throw new Error('Invalid credentials');
         }
       } catch (err) {
-        errorDiv.textContent = 'Login failed. Please try again.';
+        errorDiv.textContent = 'Invalid email or password. Please try again.';
         errorDiv.style.display = 'block';
+        
+        // Reset button
+        submitBtn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = 'Sign In';
       }
     });
   </script>
