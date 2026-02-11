@@ -10,6 +10,7 @@ async function bootstrap() {
     console.log(`Listening on port ${port}`);
     await app.listen(port);
     // Trigger Vercel deployment: v1.0.1
+    // Trigger Vercel deployment: v1.0.1
   } catch (error) {
     console.error('Nest bootstrap failed:', error);
     throw error;
