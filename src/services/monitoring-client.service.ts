@@ -219,6 +219,10 @@ export class MonitoringClientService implements OnApplicationBootstrap {
     }
   }
 
+  async runAllChecks(): Promise<ServiceResult[]> {
+    return this.runAll();
+  }
+
   async runAll(): Promise<ServiceResult[]> {
     const results: ServiceResult[] = [];
     
