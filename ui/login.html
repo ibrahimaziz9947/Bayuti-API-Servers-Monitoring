@@ -8,14 +8,16 @@
     :root {
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --bg-gradient: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
+      --bg-gradient: radial-gradient(circle at top left, #f8fafc, #f1f5f9);
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
       --error-bg: #fef2f2;
-      --error-border: #fca5a5;
+      --error-border: #fecaca;
       --error-text: #b91c1c;
-      --focus-ring: rgba(37, 99, 235, 0.2);
+      --focus-ring: rgba(37, 99, 235, 0.15);
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      --shadow-input: inset 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     body {
@@ -28,6 +30,20 @@
       align-items: center;
       justify-content: center;
       color: var(--text-main);
+      overflow: hidden;
+    }
+
+    /* Abstract background shape */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 50%;
+      height: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.03) 0%, transparent 70%);
+      filter: blur(60px);
+      z-index: -1;
     }
 
     .login-container {
@@ -35,15 +51,27 @@
       max-width: 420px;
       padding: 20px;
       box-sizing: border-box;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .login-card {
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
       padding: 40px;
       width: 100%;
       box-sizing: border-box;
+      position: relative;
     }
 
     .header {
@@ -53,32 +81,39 @@
 
     .subtitle {
       color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin: 0 0 8px 0;
+      letter-spacing: 0.1em;
+      margin: 0 0 12px 0;
     }
 
     .title {
       color: var(--text-main);
       font-size: 24px;
       font-weight: 700;
-      margin: 0;
+      margin: 0 0 4px 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
+      letter-spacing: -0.02em;
+    }
+    
+    .title-sub {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 400;
     }
 
     .icon-shield {
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       color: var(--primary);
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     label {
@@ -86,7 +121,7 @@
       margin-bottom: 8px;
       color: var(--text-main);
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     input {
@@ -100,44 +135,59 @@
       background: #fff;
       transition: all 0.2s ease;
       box-sizing: border-box;
+      box-shadow: var(--shadow-input);
     }
 
     input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px var(--focus-ring);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+
+    input::placeholder {
+      color: #94a3b8;
     }
 
     button {
       width: 100%;
       height: 48px;
-      background: var(--primary);
+      background: linear-gradient(180deg, #3b82f6, #2563eb);
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: all 0.2s ease;
       margin-top: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     button:hover {
-      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     button:disabled {
-      background: var(--text-muted);
+      background: #e2e8f0;
+      color: #94a3b8;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     .spinner {
       display: none;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: white;
@@ -159,7 +209,36 @@
       font-size: 14px;
       text-align: center;
       margin-top: 24px;
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
     }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    .secure-badge {
+      text-align: center;
+      margin-top: 24px;
+      color: var(--text-muted);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .app-footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
   </style>
 </head>
 <body>
@@ -173,6 +252,7 @@
           </svg>
           Admin Login
         </h1>
+        <div class="title-sub">Secure Administrative Access</div>
       </div>
 
       <form id="loginForm">
@@ -192,8 +272,16 @@
         </button>
 
         <div id="error" class="error-message"></div>
+        
+        <div class="secure-badge">
+           <span>🔒</span> 256-bit Secure Session
+        </div>
       </form>
     </div>
+  </div>
+
+  <div class="app-footer">
+    © 2026 Bayuti Monitoring Platform • Version 1.0.0
   </div>
 
   <script>
