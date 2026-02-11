@@ -268,7 +268,15 @@ export class MonitoringClientService implements OnApplicationBootstrap {
       // Usually returns { page: {...}, status: { indicator: "none"|"minor"|"major"|"critical", description: "All Systems Operational" } }
       // Or just check HTTP 200 for simple pages if JSON parsing fails
       
-      if (res.status === 200 && res.data?.status?.indicator !== undefined) {
+      // AWS Special Logic: AWS does not support JSON status API, so we check the HTML page for 200 OK
+      if (cfg.name === 'AWS') {
+        if (res.status === 200) {
+          status = 'up';
+        } else {
+          status = 'down';
+          error = `HTTP ${res.status}`;
+        }
+      } else if (res.status === 200 && res.data?.status?.indicator !== undefined) {
         const ind = res.data.status.indicator;
         status = ind === 'none' ? 'up' : ind === 'minor' ? 'degraded' : 'down';
       } else if (res.status === 200) {
@@ -298,7 +306,7 @@ export class MonitoringClientService implements OnApplicationBootstrap {
       { name: 'Mangopay', category: 'external', healthUrl: 'https://status.mangopay.com/api/v2/status.json', envUrl: '' },
       { name: 'Onfido', category: 'external', healthUrl: 'https://status.onfido.com/api/v2/status.json', envUrl: '' },
       { name: 'Plaid', category: 'external', healthUrl: 'https://status.plaid.com/api/v2/status.json', envUrl: '' },
-      { name: 'AWS', category: 'external', healthUrl: 'https://status.aws.amazon.com/api/v2/status.json', envUrl: '' },
+      { name: 'AWS', category: 'external', healthUrl: 'https://status.aws.amazon.com/', envUrl: '' },
     ];
   }
 
