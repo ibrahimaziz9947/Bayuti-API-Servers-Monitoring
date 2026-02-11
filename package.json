@@ -14,14 +14,23 @@
     "@nestjs/common": "^11.1.13",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.13",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.13",
     "@nestjs/serve-static": "^5.0.4",
     "axios": "^1.13.4",
+    "bcrypt": "^6.0.0",
     "express": "^5.2.1",
     "joi": "^18.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/passport": "^1.0.17",
+    "@types/passport-jwt": "^4.0.1"
   }
 }

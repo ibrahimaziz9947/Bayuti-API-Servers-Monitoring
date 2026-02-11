@@ -1,6 +1,24 @@
 let services = [];
 let logs = [];
 
+// Auth Check
+const token = localStorage.getItem('token');
+if (!token) {
+  window.location.href = '/login.html';
+}
+
+async function fetchWithAuth(url, options = {}) {
+  const headers = options.headers || {};
+  headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(url, { ...options, headers });
+  if (res.status === 401) {
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
+    throw new Error('Unauthorized');
+  }
+  return res;
+}
+
 const el = {
   servicesList: document.getElementById('servicesList'),
   logsList: document.getElementById('logsList'),
@@ -122,7 +140,7 @@ el.logLevelFilter.addEventListener('change', renderLogs);
 el.logServiceFilter.addEventListener('change', renderLogs);
 
 async function loadInitial() {
-  const re = await fetch('/api/recheck').then(r => r.json()).catch(() => null);
+  const re = await fetchWithAuth('/api/recheck').then(r => r.json()).catch(() => null);
   services = (re && re.services) ? re.services.map(s => ({
     name: s.name,
     category: s.category || 'internal',
@@ -131,7 +149,7 @@ async function loadInitial() {
     location: s.category === 'internal' ? (s.location || 'eu-west-1') : undefined,
     vendor: s.category === 'external' ? (s.vendor || s.name) : undefined
   })) : [];
-  const l = await fetch('/api/logs').then(r => r.json());
+  const l = await fetchWithAuth('/api/logs').then(r => r.json());
   logs = l.logs || [];
   populateLogServiceFilter();
   renderServices();
@@ -160,7 +178,7 @@ if (recheckBtn) {
   recheckBtn.addEventListener('click', async () => {
     recheckBtn.disabled = true;
     try {
-      const re = await fetch('/api/recheck').then(r => r.json());
+      const re = await fetchWithAuth('/api/recheck').then(r => r.json());
       if (re && re.services) {
         services = re.services.map(s => ({
           name: s.name,
@@ -171,7 +189,7 @@ if (recheckBtn) {
           vendor: s.category === 'external' ? (s.vendor || s.name) : undefined
         }));
         renderServices();
-        const l = await fetch('/api/logs').then(r => r.json());
+        const l = await fetchWithAuth('/api/logs').then(r => r.json());
         logs = l.logs || [];
         populateLogServiceFilter();
         renderLogs();

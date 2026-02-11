@@ -3,7 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MonitoringModule } from './monitoring.module';
+import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -42,12 +45,25 @@ import * as Joi from 'joi';
         MONITOR_DEGRADED_THRESHOLD_MS: Joi.number().default(1000),
         PORT: Joi.number().default(3000),
         BAYUTI_HEALTH_TOKEN: Joi.string().optional(),
+        JWT_SECRET: Joi.string().min(32).required(),
+        ADMIN_EMAIL: Joi.string().email().required(),
+        ADMIN_PASSWORD: Joi.string().min(8).required(),
       }),
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'ui'),
     }),
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      useFactory: (cfg: ConfigService) => ({
+        secret: cfg.get<string>('JWT_SECRET')!,
+        signOptions: { expiresIn: '1h' },
+      }),
+      inject: [ConfigService],
+    }),
     MonitoringModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

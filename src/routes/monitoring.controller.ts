@@ -1,11 +1,13 @@
-import { Controller, Get, Sse, Query } from '@nestjs/common';
+import { Controller, Get, Sse, Query, UseGuards } from '@nestjs/common';
 import { MonitoringService } from '../services/monitoring.service';
 import { Observable } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { MonitoringClientService } from '../services/monitoring-client.service';
+import { JwtAuthGuard } from '../modules/auth/jwt-auth.guard';
 
 @Controller('api')
+@UseGuards(JwtAuthGuard)
 export class MonitoringController {
   constructor(
     private readonly svc: MonitoringService,
