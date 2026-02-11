@@ -9,6 +9,7 @@ async function bootstrap() {
     const port = process.env.PORT ? Number(process.env.PORT) : 3000;
     console.log(`Listening on port ${port}`);
     await app.listen(port);
+    // Trigger Vercel deployment: v1.0.1
   } catch (error) {
     console.error('Nest bootstrap failed:', error);
     throw error;
