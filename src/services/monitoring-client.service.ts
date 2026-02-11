@@ -23,6 +23,7 @@ export class MonitoringClientService implements OnApplicationBootstrap {
   private timer: NodeJS.Timeout | null = null;
 
   private readonly externalCache: Map<string, { status: ServiceStatus, timestamp: number }> = new Map();
+  private previousStates: Record<string, string> = {};
 
   constructor(private readonly cfg: ConfigService) {
     this.baseUrl = this.cfg.get<string>('BAYUTI_BASE_URL')!;
@@ -220,7 +221,24 @@ export class MonitoringClientService implements OnApplicationBootstrap {
   }
 
   async runAllChecks(): Promise<ServiceResult[]> {
-    return this.runAll();
+    const results = await this.runAll();
+    
+    // State Change Detection Logic
+    for (const res of results) {
+      const prev = this.previousStates[res.name];
+      const curr = res.status;
+      
+      if (prev === undefined) {
+        // First run, initialize state
+        this.previousStates[res.name] = curr;
+      } else if (prev !== curr) {
+        // State change detected
+        this.log.log(`[STATE CHANGE] ${res.name}: ${prev} -> ${curr} at ${new Date().toISOString()}`);
+        this.previousStates[res.name] = curr;
+      }
+    }
+
+    return results;
   }
 
   async runAll(): Promise<ServiceResult[]> {
