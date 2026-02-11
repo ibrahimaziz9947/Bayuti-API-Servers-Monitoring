@@ -297,6 +297,8 @@ export class MonitoringClientService implements OnApplicationBootstrap {
       { name: 'HubSpot', category: 'external', healthUrl: 'https://status.hubspot.com/api/v2/status.json', envUrl: '' },
       { name: 'Mangopay', category: 'external', healthUrl: 'https://status.mangopay.com/api/v2/status.json', envUrl: '' },
       { name: 'Onfido', category: 'external', healthUrl: 'https://status.onfido.com/api/v2/status.json', envUrl: '' },
+      { name: 'Plaid', category: 'external', healthUrl: 'https://status.plaid.com/api/v2/status.json', envUrl: '' },
+      { name: 'AWS', category: 'external', healthUrl: 'https://status.aws.amazon.com/api/v2/status.json', envUrl: '' },
     ];
   }
 
