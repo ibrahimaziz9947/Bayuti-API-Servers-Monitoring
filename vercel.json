@@ -14,7 +14,7 @@
   ],
   "crons": [
     {
-      "path": "/api/cron/run-monitoring?secret=SomeVeryStrongSecretValue123",
+      "path": "/api/cron/run-monitoring",
       "schedule": "*/5 * * * *"
     }
   ]

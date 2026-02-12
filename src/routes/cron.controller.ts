@@ -1,6 +1,5 @@
-import { Controller, Get, Req, UnauthorizedException, Logger, Query } from '@nestjs/common';
+import { Controller, Get, UnauthorizedException, Logger, Headers } from '@nestjs/common';
 import { MonitoringClientService } from '../services/monitoring-client.service';
-import { Request } from 'express';
 
 @Controller('api/cron')
 export class CronController {
@@ -9,12 +8,11 @@ export class CronController {
   constructor(private readonly monitoringService: MonitoringClientService) {}
 
   @Get('run-monitoring')
-  async runMonitoring(@Query('secret') secret: string) {
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (!cronSecret || secret !== cronSecret) {
-      this.log.warn('Unauthorized cron attempt');
-      throw new UnauthorizedException('Invalid cron secret');
+  async runMonitoring(@Headers('x-vercel-cron') vercelCron: string) {
+    // Vercel sends x-vercel-cron: 1
+    if (vercelCron !== '1') {
+      this.log.warn('Unauthorized cron attempt: Missing or invalid x-vercel-cron header');
+      throw new UnauthorizedException('Unauthorized: Vercel Cron header missing');
     }
 
     this.log.log('Executing scheduled monitoring check...');
