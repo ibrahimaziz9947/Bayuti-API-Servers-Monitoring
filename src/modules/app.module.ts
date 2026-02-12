@@ -45,9 +45,10 @@ import { ConfigService } from '@nestjs/config';
         MONITOR_DEGRADED_THRESHOLD_MS: Joi.number().default(1000),
         PORT: Joi.number().default(3000),
         BAYUTI_HEALTH_TOKEN: Joi.string().optional(),
-        JWT_SECRET: Joi.string().min(32).optional(),
-        ADMIN_EMAIL: Joi.string().email().optional(),
-        ADMIN_PASSWORD: Joi.string().min(8).optional(),
+        JWT_SECRET: Joi.string().min(32).required(),
+        ADMIN_EMAIL: Joi.string().email().required(),
+        ADMIN_PASSWORD: Joi.string().min(8).required(),
+        CRON_SECRET: Joi.string().required(),
       }),
     }),
     ServeStaticModule.forRoot({
